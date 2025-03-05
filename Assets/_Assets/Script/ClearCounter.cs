@@ -1,18 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 
 public class ClearCounter : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    
+    [SerializeField] GameObject selectedVisual;
+    [SerializeField] Transform coutnerTopPoint;
+    [SerializeField] GameObject tomatoObject;
+
+    public void Interact()
     {
-        
+        Instantiate(tomatoObject,coutnerTopPoint);
     }
 
-    // Update is called once per frame
-    void Update()
+
+
+
+
+
+
+
+
+
+
+
+
+    public void ListentoOnSelectedCounterChanged(Component sender,object data)
     {
-        
+        if(data is ClearCounter)
+        {
+            selectedVisual.SetActive(this == (ClearCounter)data);
+        }else{
+            selectedVisual.SetActive(false);
+        }
     }
 }

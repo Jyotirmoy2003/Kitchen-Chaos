@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using UnityEngine.InputSystem;
 
 public class GameInput : MonoSingleton<GameInput>
 {
-
+    public event EventHandler OnInteractAction;
     private GameInputAction inputActions;
 
     void Awake()
@@ -14,7 +16,13 @@ public class GameInput : MonoSingleton<GameInput>
         inputActions = new GameInputAction();
 
         inputActions.Player.Enable();
+        inputActions.Player.Interact.performed +=  InteractPerformed;
 
+    }
+
+    void InteractPerformed(InputAction.CallbackContext obj)
+    {
+        OnInteractAction.Invoke(this,EventArgs.Empty);
     }
 
 

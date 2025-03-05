@@ -1,9 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    #region Event
+    [SerializeField] GameEvent OnSelectedCounterChanged;
+    #endregion
     [Header("Settings")]
     [SerializeField] float moveSpeed = 10f;
     [SerializeField] float rotationSpeed = 10f;
@@ -16,10 +20,23 @@ public class Player : MonoBehaviour
     private Vector3 lastInteractDir;
     private Transform myTranform;
     private bool isWalking = false;
+    private ClearCounter selectedCounter;
+
+
+
 
     void Start()
     {
         myTranform = transform;
+        GameInput.Instance.OnInteractAction += OnInreactButtonPressed;
+    }
+
+    private void OnInreactButtonPressed(object sender, EventArgs e)
+    {
+       if(selectedCounter != null)
+       {
+            selectedCounter.Interact();
+       }
     }
 
     private void Update()
@@ -32,8 +49,10 @@ public class Player : MonoBehaviour
         return isWalking;
     }
 
+    
     private void HandelInteraction()
     {
+        
         Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
 
         Vector3 moveDir = new Vector3(inputVector.x,0f,inputVector.y);
@@ -45,9 +64,19 @@ public class Player : MonoBehaviour
         
         if(Physics.Raycast(myTranform.position,lastInteractDir,out RaycastHit hitInfo,interactionDistance,interactableLayer))
         {
-            Debug.Log("Hit: "+hitInfo.collider.name);
+            if(hitInfo.collider.TryGetComponent<ClearCounter>(out ClearCounter clearCounter))
+            {
+                if(clearCounter != selectedCounter)
+                {
+                   SetSelectedCounter(clearCounter);
+                    
+                }
+            }else{
+                SetSelectedCounter(null);
+            }
+        }else{
+            SetSelectedCounter(null);
         }
-
         
     }
 
@@ -92,4 +121,22 @@ public class Player : MonoBehaviour
         isWalking = moveDir != Vector3.zero;
         myTranform.forward = Vector3.Slerp(myTranform.forward,moveDir,Time.deltaTime*rotationSpeed);
     }
+
+
+    private void SetSelectedCounter(ClearCounter selectedCounter)
+    {
+        this.selectedCounter = selectedCounter;
+        OnSelectedCounterChanged.Raise(this,selectedCounter); //fire event when coutner changes
+        
+    }
+
+
+
+
+
+
+
+
+
+
 }
