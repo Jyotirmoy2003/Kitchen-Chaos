@@ -8,11 +8,11 @@ public class ClearCounter : MonoBehaviour
     
     [SerializeField] GameObject selectedVisual;
     [SerializeField] Transform coutnerTopPoint;
-    [SerializeField] GameObject tomatoObject;
+    [SerializeField] KitchenObjectSO kitchenObjectSO;
 
     public void Interact()
     {
-        Instantiate(tomatoObject,coutnerTopPoint);
+        Instantiate(kitchenObjectSO.prefab,coutnerTopPoint);
     }
 
 
